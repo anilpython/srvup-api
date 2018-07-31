@@ -6,12 +6,22 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 
 from rest_framework import routers
-from videos.serializers import VideoViewSet
+from videos.serializers import VideoViewSet, CategoryViewSet
+from comments.serializers import CommentViewSet
 
 router = routers.DefaultRouter()
 router.register(r"videos",VideoViewSet)
+router.register(r"categories",CategoryViewSet)
+router.register(r"comments",CommentViewSet)
+
+
+from videos.views import CategoryListAPIView, CategoryDetailAPIView
+
 
 urlpatterns = patterns('',
+    url(r'^api2/projects/$',CategoryListAPIView.as_view(),name="categorie_list_api"),
+    url(r'^api2/projects/(?P<slug>[\w-]+)/$',CategoryDetailAPIView.as_view(),name="category_detail_api"),
+
     # Examples:
     #url(r'^about/$', TemplateView.as_view(template_name='base.html'), name='home'),
     #url(r'^pricing/$', TemplateView.as_view(template_name='base.html'), name='home'),
@@ -21,6 +31,8 @@ urlpatterns = patterns('',
     url(r'^projects/(?P<cat_slug>[\w-]+)/$', 'videos.views.category_detail', name='project_detail'),
     url(r'^projects/(?P<cat_slug>[\w-]+)/(?P<vid_slug>[\w-]+)/$', 'videos.views.video_detail', name='video_detail'),
     url(r'^dj/admin/', include(admin.site.urls)),
+    
+    url(r'^api/auth/token/$','rest_framework_jwt.views.obtain_jwt_token'),
     url(r'^api/',include(router.urls)),
     url(r'^api/auth/',include('rest_framework.urls',namespace="rest_framework")),
 ) 

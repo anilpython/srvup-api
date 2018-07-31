@@ -14,6 +14,37 @@ from comments.models import Comment
 
 from .models import Video, Category, TaggedItem
 
+from .serializers import CategorySerializer
+from rest_framework import generics
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework import routers, serializers, viewsets, permissions
+
+
+
+class CategoryListAPIView(generics.ListAPIView):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	queryset = Category.objects.all()
+	serializer_class = CategorySerializer
+	permission_classes = [permissions.IsAuthenticated]
+
+	# def get_queryset(self):
+	# 	user = self.request.user
+	# 	return user.accounts.all()
+
+
+class CategoryDetailAPIView(generics.RetrieveAPIView):
+	authentication_classes = [SessionAuthentication, BasicAuthentication]
+	queryset = Category.objects.all()
+	serializer_class = CategorySerializer
+	permission_classes = [permissions.IsAuthenticated]
+
+	def get_object(self):
+		print(self.kwargs)
+		slug = self.kwargs["slug"]
+		obj = get_object_or_404(Category, slug=slug)
+		return obj
+
+
 
 #@login_required
 def video_detail(request, cat_slug, vid_slug):
